@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  open-encroachment:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_AGENT_MODEL=${OPENAI_AGENT_MODEL:-gpt-4o-mini}
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./outbox:/app/outbox
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./config:/app/config
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Datasette for database exploration
+  datasette:
+    image: datasette:latest
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./artifacts/case_manager.db:/data/case_manager.db
+      - ./datasette.yaml:/data/datasette.yaml
+    command: ["datasette", "-c", "/data/datasette.yaml", "--reload", "/data"]
+    depends_on:
+      - open-encroachment
+    profiles:
+      - datasette

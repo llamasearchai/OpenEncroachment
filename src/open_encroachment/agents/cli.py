@@ -3,8 +3,6 @@ import os
 
 import typer
 
-from .agent import run_agent
-
 app = typer.Typer(add_completion=False, help="OpenEncroachment Agent CLI")
 
 
@@ -20,6 +18,9 @@ def run(
     json_output: bool = typer.Option(False, "--json", help="Emit JSON output"),
 ) -> None:
     try:
+        # Lazy import to allow --help without optional dependencies
+        from .agent import run_agent  # type: ignore
+
         result = run_agent(prompt=prompt, model=model, system=system)
     except Exception as e:
         typer.echo(f"Agent error: {e}", err=True)

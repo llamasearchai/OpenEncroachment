@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
+from typing import Any
 
 # Earth radius in meters
 EARTH_R = 6371000.0
@@ -41,7 +42,9 @@ def point_in_polygon(lat: float, lon: float, polygon: Iterable[tuple[float, floa
     return inside
 
 
-def any_geofence_contains(lat: float, lon: float, geofences: list[dict]) -> tuple[bool, str | None]:
+def any_geofence_contains(
+    lat: float, lon: float, geofences: list[dict[str, Any]]
+) -> tuple[bool, str | None]:
     """Return (inside, geofence_id) for first geofence that contains point."""
     for gf in geofences:
         polygon = gf.get("polygon", [])

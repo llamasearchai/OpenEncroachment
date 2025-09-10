@@ -38,8 +38,8 @@ def run_pipeline(config_path: str | None = None, use_sample_data: bool = False) 
     for raw in raw_events:
         try:
             events.append(Event(**raw))
-        except ValueError as e:
-            print(f"Skipping invalid event: {e}")
+        except ValueError as err:
+            print(f"Skipping invalid event: {err}")
             continue
 
     # Pass Pydantic Event objects directly; fuser will extract dicts as needed
@@ -48,8 +48,8 @@ def run_pipeline(config_path: str | None = None, use_sample_data: bool = False) 
     for raw in raw_fused:
         try:
             fused.append(FusedEvent(**raw))
-        except ValueError as e:
-            print(f"Skipping invalid fused event: {e}")
+        except ValueError as err:
+            print(f"Skipping invalid fused event: {err}")
             continue
 
     clf = ThreatClassifier(model_dir=cfg.get("artifacts", {}).get("models_dir", "artifacts/models"))
@@ -68,8 +68,8 @@ def run_pipeline(config_path: str | None = None, use_sample_data: bool = False) 
         raw_inc["severity"] = severity
         try:
             incidents.append(Incident(**raw_inc))
-        except ValueError as e:
-            print(f"Skipping invalid incident: {e}")
+        except ValueError as err:
+            print(f"Skipping invalid incident: {err}")
             continue
 
     cm = CaseManager(db_path=cfg.get("artifacts", {}).get("db_path", "artifacts/case_manager.db"))
@@ -91,7 +91,7 @@ def run_pipeline(config_path: str | None = None, use_sample_data: bool = False) 
                         "geofence_id": inc.geofence_id,
                     },
                     "threat_probability": inc.threat_probability,
-                    "severity": inc.severity.dict(),
+                    "severity": inc.severity.model_dump(),
                     "sources": inc.sources,
                 }
             )

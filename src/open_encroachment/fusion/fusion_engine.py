@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from datetime import datetime, timezone
 from typing import Any
 
@@ -28,7 +29,7 @@ def _parse_ts(s: str) -> datetime:
 
 
 def fuse_events(
-    events: list[dict[str, Any]],
+    events: Sequence[Any],
     config: dict[str, Any],
     max_distance_m: float = 500.0,
     max_time_delta_s: int = 600,

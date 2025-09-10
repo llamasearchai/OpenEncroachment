@@ -1,4 +1,3 @@
-import json
 from typing import Any
 
 from open_encroachment.case_management.case_manager import CaseManager
@@ -76,67 +75,5 @@ def package_notification(incident_id: str, config: str | None = None) -> dict[st
     return {"ok": True, "notice_id": incident_id}
 
 
-def tool_schemas() -> list[dict]:
-    return [
-        {
-            "type": "function",
-            "function": {
-                "name": "run_pipeline",
-                "description": "Run the end-to-end pipeline and return a summary.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "config": {"type": "string", "description": "Path to settings YAML"},
-                        "sample_data": {"type": "boolean", "default": False},
-                    },
-                    "required": [],
-                    "additionalProperties": False,
-                },
-            },
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": "severity_summary",
-                "description": "Summarize incident severities.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "config": {"type": "string"},
-                        "limit": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 10000,
-                            "default": 100,
-                        },
-                    },
-                    "required": [],
-                    "additionalProperties": False,
-                },
-            },
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": "package_notification",
-                "description": "Create and write an outbound notification for an incident to the outbox.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {"incident_id": {"type": "string"}, "config": {"type": "string"}},
-                    "required": ["incident_id"],
-                    "additionalProperties": False,
-                },
-            },
-        },
-    ]
-
-
-def call_tool(name: str, arguments_json: str) -> dict[str, Any]:
-    args = json.loads(arguments_json) if arguments_json else {}
-    if name == "run_pipeline":
-        return run_pipeline(**args)
-    if name == "severity_summary":
-        return severity_summary(**args)
-    if name == "package_notification":
-        return package_notification(**args)
-    return {"ok": False, "error": f"Unknown tool {name}"}
+# Tools are now defined as function decorators in agent.py
+# This module provides the core tool implementations

@@ -8,7 +8,7 @@ import pathlib
 from typing import Any
 
 
-def ensure_dir(path: str | os.PathLike) -> None:
+def ensure_dir(path: str | os.PathLike[str]) -> None:
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 
@@ -24,7 +24,7 @@ def gen_id(prefix: str = "evt") -> str:
     return f"{prefix}_{uuid.uuid4().hex}"
 
 
-def write_json(path: str | os.PathLike, data: Any) -> None:
+def write_json(path: str | os.PathLike[str], data: Any) -> None:
     import json
 
     p = pathlib.Path(path)
@@ -34,7 +34,7 @@ def write_json(path: str | os.PathLike, data: Any) -> None:
         json.dump(data, f, indent=2, sort_keys=True)
 
 
-def append_jsonl(path: str | os.PathLike, data: Any) -> None:
+def append_jsonl(path: str | os.PathLike[str], data: Any) -> None:
     import json
 
     p = pathlib.Path(path)
@@ -44,14 +44,14 @@ def append_jsonl(path: str | os.PathLike, data: Any) -> None:
         f.write(json.dumps(data, separators=(",", ":")) + "\n")
 
 
-def read_json(path: str | os.PathLike) -> Any:
+def read_json(path: str | os.PathLike[str]) -> Any:
     import json
 
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def file_sha256(path: str | os.PathLike) -> str:
+def file_sha256(path: str | os.PathLike[str]) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
@@ -59,7 +59,7 @@ def file_sha256(path: str | os.PathLike) -> str:
     return h.hexdigest()
 
 
-def load_or_create_hmac_key(key_path: str | os.PathLike) -> bytes:
+def load_or_create_hmac_key(key_path: str | os.PathLike[str]) -> bytes:
     p = pathlib.Path(key_path)
     if not p.exists():
         p.parent.mkdir(parents=True, exist_ok=True)

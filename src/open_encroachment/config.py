@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import pathlib
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -35,7 +35,7 @@ DEFAULT_CONFIG = {
 }
 
 
-def load_config(path: str | os.PathLike | None) -> dict[str, Any]:
+def load_config(path: str | os.PathLike[str] | None) -> dict[str, Any]:
     """Load YAML config; fall back to DEFAULT_CONFIG if missing."""
     if path is None:
         return DEFAULT_CONFIG
@@ -45,7 +45,7 @@ def load_config(path: str | os.PathLike | None) -> dict[str, Any]:
     with p.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
     # Merge shallowly with defaults
-    cfg = DEFAULT_CONFIG.copy()
+    cfg = cast(dict[str, Any], dict(DEFAULT_CONFIG))
     for k, v in data.items():
         if isinstance(v, dict) and isinstance(cfg.get(k), dict):
             merged = cfg[k].copy()
