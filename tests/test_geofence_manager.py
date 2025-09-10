@@ -106,8 +106,12 @@ class TestGeofenceManager:
 
     def test_distance_to_geofence(self, manager):
         """Test distance calculation to geofence."""
-        # Point inside geofence should return 0
-        distance = manager.distance_to_geofence(37.3417, -122.0151, "test_area_1")
+        # First verify if the point is inside the geofence
+        inside, geofence_id = manager.contains_point(37.34135, -122.01505)
+        assert inside, "Test point should be inside the geofence"
+
+        # Test distance calculation for point inside geofence
+        distance = manager.distance_to_geofence(37.34135, -122.01505, "test_area_1")
         assert distance == 0.0
 
         # Point outside geofence

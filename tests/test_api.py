@@ -2,6 +2,8 @@
 Tests for the OpenEncroachment FastAPI application.
 """
 
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -59,7 +61,7 @@ def test_severity_summary_endpoint(client):
     assert response.status_code in [200, 500]  # 500 is acceptable for missing database
 
 
-@pytest.mark.skipif("OPENAI_API_KEY" not in pytest.env, reason="OpenAI API key not available")
+@pytest.mark.skipif("OPENAI_API_KEY" not in os.environ, reason="OpenAI API key not available")
 def test_agent_run_endpoint(client):
     """Test the agent run endpoint (requires OpenAI API key)."""
     payload = {"prompt": "What is the current status of the system?", "model": "gpt-4o-mini"}
@@ -68,7 +70,7 @@ def test_agent_run_endpoint(client):
     assert response.status_code in [200, 401, 500]
 
 
-@pytest.mark.skipif("OPENAI_API_KEY" not in pytest.env, reason="OpenAI API key not available")
+@pytest.mark.skipif("OPENAI_API_KEY" not in os.environ, reason="OpenAI API key not available")
 def test_pipeline_run_endpoint(client):
     """Test the pipeline run endpoint."""
     payload = {"config_path": "config/settings.yaml", "use_sample_data": True}
@@ -77,7 +79,7 @@ def test_pipeline_run_endpoint(client):
     assert response.status_code in [200, 500]
 
 
-@pytest.mark.skipif("OPENAI_API_KEY" not in pytest.env, reason="OpenAI API key not available")
+@pytest.mark.skipif("OPENAI_API_KEY" not in os.environ, reason="OpenAI API key not available")
 def test_notification_endpoint(client):
     """Test the notification creation endpoint."""
     payload = {"incident_id": "test-incident-123", "config_path": "config/settings.yaml"}

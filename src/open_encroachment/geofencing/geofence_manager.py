@@ -39,7 +39,8 @@ class GeofenceManager:
 
     def list_geofences(self) -> list[dict[str, Any]]:
         """Get all geofence definitions."""
-        return self.geofences.copy()
+        import copy
+        return copy.deepcopy(self.geofences)
 
     def distance_to_geofence(self, lat: float, lon: float, geofence_id: str) -> float | None:
         """Calculate distance from point to nearest edge of specified geofence."""
@@ -51,6 +52,12 @@ class GeofenceManager:
         if not polygon:
             return None
 
+        # Check if point is inside the polygon
+        inside, _ = self.contains_point(lat, lon)
+        if inside:
+            return 0.0
+
+        # Point is outside, calculate distance to nearest edge
         min_distance = float("inf")
         for i in range(len(polygon)):
             p1 = polygon[i]
@@ -66,8 +73,29 @@ class GeofenceManager:
         self, px: float, py: float, x1: float, y1: float, x2: float, y2: float
     ) -> float:
         """Calculate distance from point to line segment."""
-        # Convert to meters for accurate distance calculation
-        return haversine_distance_m(px, py, x1, y1)
+        # Vector from p1 to p2
+        dx = x2 - x1
+        dy = y2 - y1
+
+        # Vector from p1 to point
+        px_dx = px - x1
+        py_dy = py - y1
+
+        # Length of line segment squared
+        len_sq = dx * dx + dy * dy
+        if len_sq == 0:
+            # p1 and p2 are the same point
+            return haversine_distance_m(px, py, x1, y1)
+
+        # Parameter of closest point on line
+        t = max(0, min(1, (px_dx * dx + py_dy * dy) / len_sq))
+
+        # Closest point on line segment
+        closest_x = x1 + t * dx
+        closest_y = y1 + t * dy
+
+        # Distance to closest point
+        return haversine_distance_m(px, py, closest_x, closest_y)
 
     def get_geofence_stats(self) -> dict[str, Any]:
         """Get statistics about geofences."""
