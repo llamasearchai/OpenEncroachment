@@ -5,7 +5,7 @@ import sqlite3
 from collections.abc import Iterable
 from typing import Any
 
-from ..utils.io import ensure_dir
+from open_encroachment.utils.io import ensure_dir
 
 
 class CaseManager:
@@ -103,6 +103,7 @@ class CaseManager:
 
     def create_case(self, incident_id: str, assigned_to: str = "", status: str = "open") -> int:
         from datetime import datetime, timezone
+
         ts = datetime.now(timezone.utc).isoformat()
         con = sqlite3.connect(self.db_path)
         try:
@@ -118,6 +119,7 @@ class CaseManager:
 
     def update_case_status(self, case_id: int, status: str) -> None:
         from datetime import datetime, timezone
+
         ts = datetime.now(timezone.utc).isoformat()
         con = sqlite3.connect(self.db_path)
         try:
@@ -137,4 +139,3 @@ class CaseManager:
             return [dict(r) for r in rows]
         finally:
             con.close()
-

@@ -33,7 +33,7 @@ def point_in_polygon(lat: float, lon: float, polygon: Iterable[tuple[float, floa
         y1, x1 = points[i]
         y2, x2 = points[(i + 1) % n]
         # Check if point is between y1 and y2
-        if ((y1 > y) != (y2 > y)):
+        if (y1 > y) != (y2 > y):
             # Compute intersection of polygon edge with horizontal ray from point
             xinters = (x2 - x1) * (y - y1) / (y2 - y1 + 1e-12) + x1
             if x < xinters:
@@ -50,4 +50,3 @@ def any_geofence_contains(lat: float, lon: float, geofences: list[dict]) -> tupl
         if point_in_polygon(lat, lon, polygon):
             return True, gf.get("id") or gf.get("name")
     return False, None
-

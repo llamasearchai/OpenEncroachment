@@ -25,16 +25,13 @@ DEFAULT_CONFIG = {
         "webhook_url": None,
         "headers": {},
     },
-    "thresholds": {
-        "severity_notify_min": 0.6,
-        "severity_escalate_min": 0.8
-    },
+    "thresholds": {"severity_notify_min": 0.6, "severity_escalate_min": 0.8},
     "artifacts": {
         "models_dir": "artifacts/models",
         "predictions_dir": "artifacts/predictions",
         "db_path": "artifacts/case_manager.db",
-        "evidence_ledger": "artifacts/evidence_ledger.jsonl"
-    }
+        "evidence_ledger": "artifacts/evidence_ledger.jsonl",
+    },
 }
 
 
@@ -57,4 +54,3 @@ def load_config(path: str | os.PathLike | None) -> dict[str, Any]:
         else:
             cfg[k] = v
     return cfg
-

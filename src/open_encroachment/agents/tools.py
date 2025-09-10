@@ -26,13 +26,15 @@ def severity_summary(config: str | None = None, limit: int = 100) -> dict[str, A
             buckets["medium"] += 1
         else:
             buckets["low"] += 1
-        details.append({
-            "id": inc["id"],
-            "timestamp": inc["timestamp"],
-            "geofence_id": inc.get("geofence_id"),
-            "severity": sev,
-            "threat_probability": float(inc.get("threat_probability") or 0.0),
-        })
+        details.append(
+            {
+                "id": inc["id"],
+                "timestamp": inc["timestamp"],
+                "geofence_id": inc.get("geofence_id"),
+                "severity": sev,
+                "threat_probability": float(inc.get("threat_probability") or 0.0),
+            }
+        )
     return {"ok": True, "buckets": buckets, "count": len(incs), "details": details[:10]}
 
 
@@ -53,18 +55,24 @@ def package_notification(incident_id: str, config: str | None = None) -> dict[st
         "payload": {
             "severity": float(inc.get("severity_overall") or 0.0),
             "threat_probability": float(inc.get("threat_probability") or 0.0),
-            "location": {"lat": inc.get("lat"), "lon": inc.get("lon"), "geofence_id": inc.get("geofence_id")},
+            "location": {
+                "lat": inc.get("lat"),
+                "lon": inc.get("lon"),
+                "geofence_id": inc.get("geofence_id"),
+            },
         },
     }
     # Reuse Dispatcher to sign and write
-    disp.notify({
-        "id": envelope["id"],
-        "timestamp": envelope["timestamp"],
-        "location": envelope["payload"]["location"],
-        "threat_probability": envelope["payload"]["threat_probability"],
-        "severity": {"overall": envelope["payload"]["severity"]},
-        "sources": [],
-    })
+    disp.notify(
+        {
+            "id": envelope["id"],
+            "timestamp": envelope["timestamp"],
+            "location": envelope["payload"]["location"],
+            "threat_probability": envelope["payload"]["threat_probability"],
+            "severity": {"overall": envelope["payload"]["severity"]},
+            "sources": [],
+        }
+    )
     return {"ok": True, "notice_id": incident_id}
 
 
@@ -79,7 +87,7 @@ def tool_schemas() -> list[dict]:
                     "type": "object",
                     "properties": {
                         "config": {"type": "string", "description": "Path to settings YAML"},
-                        "sample_data": {"type": "boolean", "default": False}
+                        "sample_data": {"type": "boolean", "default": False},
                     },
                     "required": [],
                     "additionalProperties": False,
@@ -95,7 +103,12 @@ def tool_schemas() -> list[dict]:
                     "type": "object",
                     "properties": {
                         "config": {"type": "string"},
-                        "limit": {"type": "integer", "minimum": 1, "maximum": 10000, "default": 100}
+                        "limit": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 10000,
+                            "default": 100,
+                        },
                     },
                     "required": [],
                     "additionalProperties": False,
@@ -109,10 +122,7 @@ def tool_schemas() -> list[dict]:
                 "description": "Create and write an outbound notification for an incident to the outbox.",
                 "parameters": {
                     "type": "object",
-                    "properties": {
-                        "incident_id": {"type": "string"},
-                        "config": {"type": "string"}
-                    },
+                    "properties": {"incident_id": {"type": "string"}, "config": {"type": "string"}},
                     "required": ["incident_id"],
                     "additionalProperties": False,
                 },
@@ -130,4 +140,3 @@ def call_tool(name: str, arguments_json: str) -> dict[str, Any]:
     if name == "package_notification":
         return package_notification(**args)
     return {"ok": False, "error": f"Unknown tool {name}"}
-

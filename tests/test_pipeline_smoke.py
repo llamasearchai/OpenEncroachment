@@ -6,4 +6,3 @@ def test_pipeline_smoke(tmp_path, monkeypatch):
     result = run_pipeline(config_path=None, use_sample_data=True)
     assert "events" in result
     assert "incidents" in result
-

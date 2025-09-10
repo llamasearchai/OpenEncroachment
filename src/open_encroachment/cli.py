@@ -64,8 +64,9 @@ def build_parser() -> argparse.ArgumentParser:
     ag.add_argument("rest", nargs=argparse.REMAINDER, help="Arguments passed to agent CLI")
 
     def cmd_agent(args: argparse.Namespace) -> None:
-        call = [sys.executable, "-m", "open_encroachment.agents.cli"] + args.rest
-        sys.exit(subprocess.call(call))
+        sys.exit(
+            subprocess.call([sys.executable, "-m", "open_encroachment.agents.cli", *args.rest])
+        )
 
     ag.set_defaults(func=cmd_agent)
 
@@ -76,4 +77,3 @@ def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
     args.func(args)
-

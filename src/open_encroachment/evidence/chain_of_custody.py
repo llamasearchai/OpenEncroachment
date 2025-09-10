@@ -6,7 +6,7 @@ import pathlib
 from collections.abc import Iterable
 from typing import Any
 
-from ..utils.io import append_jsonl, file_sha256, now_iso
+from open_encroachment.utils.io import append_jsonl, file_sha256, now_iso
 
 
 def _ledger_path(config: dict[str, Any]) -> pathlib.Path:
@@ -14,7 +14,9 @@ def _ledger_path(config: dict[str, Any]) -> pathlib.Path:
     return pathlib.Path(p)
 
 
-def append_records(config: dict[str, Any], incident: dict[str, Any], files: Iterable[str]) -> list[dict[str, Any]]:
+def append_records(
+    config: dict[str, Any], incident: dict[str, Any], files: Iterable[str]
+) -> list[dict[str, Any]]:
     ledger = _ledger_path(config)
     ledger.parent.mkdir(parents=True, exist_ok=True)
     prev_hash = "0" * 64
@@ -83,4 +85,3 @@ def verify_ledger(config: dict[str, Any]) -> tuple[bool, int]:
             prev = rec.get("chain_hash")
             count += 1
     return True, count
-

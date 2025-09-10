@@ -7,7 +7,7 @@ from typing import Any
 import numpy as np
 from PIL import Image, ImageFilter
 
-from ..utils.io import gen_id, now_iso
+from open_encroachment.utils.io import gen_id, now_iso
 
 
 def _image_features(img: Image.Image) -> dict[str, float]:
@@ -31,7 +31,9 @@ def ingest(config: dict[str, Any], data_dir: str = "data/satellite") -> list[dic
     p = pathlib.Path(data_dir)
     if not p.exists():
         return events
-    for path in itertools.chain(p.glob("*.jpg"), p.glob("*.jpeg"), p.glob("*.png"), p.glob("*.ppm")):
+    for path in itertools.chain(
+        p.glob("*.jpg"), p.glob("*.jpeg"), p.glob("*.png"), p.glob("*.ppm")
+    ):
         try:
             with Image.open(path) as img:
                 feats = _image_features(img)
@@ -49,4 +51,3 @@ def ingest(config: dict[str, Any], data_dir: str = "data/satellite") -> list[dic
         }
         events.append(evt)
     return events
-

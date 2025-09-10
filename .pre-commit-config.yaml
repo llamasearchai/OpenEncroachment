@@ -14,5 +14,5 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: []
-        args: [--strict, --config-file=pyproject.toml, src/open_encroachment]
-
+        args: [--strict, --config-file=pyproject.toml, -p, open_encroachment]
+        pass_filenames: false

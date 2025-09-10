@@ -4,7 +4,7 @@ import csv
 import pathlib
 from typing import Any
 
-from ..utils.io import gen_id, now_iso
+from open_encroachment.utils.io import gen_id, now_iso
 
 
 def ingest(
@@ -42,4 +42,3 @@ def ingest(
             }
             events.append(evt)
     return events
-

@@ -3,8 +3,21 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from ..utils.geo import any_geofence_contains, haversine_distance_m
-from ..utils.io import gen_id
+from open_encroachment.utils.geo import any_geofence_contains, haversine_distance_m
+from open_encroachment.utils.io import gen_id
+
+
+def _as_dict(obj: Any) -> dict[str, Any]:
+    """Return a plain dict for either Pydantic models or already-dicts."""
+    # Pydantic v2
+    if hasattr(obj, "model_dump"):
+        return obj.model_dump()  # type: ignore[no-any-return]
+    # Pydantic v1 compatibility
+    if hasattr(obj, "dict"):
+        return obj.dict()  # type: ignore[no-any-return]
+    if isinstance(obj, dict):
+        return obj
+    raise TypeError(f"Unsupported event type: {type(obj)!r}")
 
 
 def _parse_ts(s: str) -> datetime:
@@ -25,10 +38,11 @@ def fuse_events(
     loc: list[tuple[int, dict[str, Any]]] = []
     nloc: list[tuple[int, dict[str, Any]]] = []
     for i, e in enumerate(events):
-        if e.get("lat") is not None and e.get("lon") is not None:
-            loc.append((i, e))
+        d = _as_dict(e)
+        if d.get("lat") is not None and d.get("lon") is not None:
+            loc.append((i, d))
         else:
-            nloc.append((i, e))
+            nloc.append((i, d))
 
     # Sort locatable by time
     loc.sort(key=lambda t: _parse_ts(t[1].get("timestamp", "")))
@@ -48,7 +62,7 @@ def fuse_events(
             cl_lon = sum(cl_lons) / len(cl_lons)
             d = haversine_distance_m(e["lat"], e["lon"], cl_lat, cl_lon)
             times = sorted(_parse_ts(x.get("timestamp", "")) for x in cl)
-            dt = abs((et - times[len(times)//2]).total_seconds())
+            dt = abs((et - times[len(times) // 2]).total_seconds())
             if d <= max_distance_m and dt <= max_time_delta_s:
                 cl.append(e)
                 placed = True
@@ -63,7 +77,7 @@ def fuse_events(
         best_dt = float("inf")
         for i, cl in enumerate(clusters):
             times = sorted(_parse_ts(x.get("timestamp", "")) for x in cl)
-            dt = abs((et - times[len(times)//2]).total_seconds())
+            dt = abs((et - times[len(times) // 2]).total_seconds())
             if dt < best_dt:
                 best_dt = dt
                 best_idx = i
@@ -93,17 +107,18 @@ def fuse_events(
         inside, gf_id = (False, None)
         if lat is not None and lon is not None:
             inside, gf_id = any_geofence_contains(lat, lon, geofences)
-        fused.append({
-            "id": gen_id("fused"),
-            "timestamp": sorted(_parse_ts(x.get("timestamp", "")) for x in cl)[0].isoformat(),
-            "lat": lat,
-            "lon": lon,
-            "in_geofence": inside,
-            "geofence_id": gf_id,
-            "features": feats,
-            "texts": texts,
-            "sources": [e["source"] for e in cl],
-            "raw_event_ids": [e["id"] for e in cl],
-        })
+        fused.append(
+            {
+                "id": gen_id("fused"),
+                "timestamp": sorted(_parse_ts(x.get("timestamp", "")) for x in cl)[0].isoformat(),
+                "lat": lat,
+                "lon": lon,
+                "in_geofence": inside,
+                "geofence_id": gf_id,
+                "features": feats,
+                "texts": texts,
+                "sources": [e["source"] for e in cl],
+                "raw_event_ids": [e["id"] for e in cl],
+            }
+        )
     return fused
-

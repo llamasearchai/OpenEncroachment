@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import pathlib
+import warnings
 from collections.abc import Iterable
 
 import joblib
 import numpy as np
+from sklearn.exceptions import InconsistentVersionWarning
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import Pipeline
@@ -19,14 +21,22 @@ class SocialNLP:
 
     def _ensure_model(self) -> None:
         if self.model_path.exists():
-            self.pipeline = joblib.load(self.model_path)
-            return
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", InconsistentVersionWarning)
+                try:
+                    self.pipeline = joblib.load(self.model_path)
+                    return
+                except Exception:
+                    # Fallback to (re)train if load fails
+                    pass
         self.model_dir.mkdir(parents=True, exist_ok=True)
         texts, labels = self._load_training_data()
-        self.pipeline = Pipeline([
-            ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1,2))),
-            ("clf", SGDClassifier(loss="log_loss", max_iter=1000, tol=1e-3, random_state=42)),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),
+                ("clf", SGDClassifier(loss="log_loss", max_iter=1000, tol=1e-3, random_state=42)),
+            ]
+        )
         self.pipeline.fit(texts, labels)
         joblib.dump(self.pipeline, self.model_path)
 
@@ -36,6 +46,7 @@ class SocialNLP:
         labels: list[int] = []  # 1=threat-indicative, 0=benign
         if path.exists():
             import csv
+
             with path.open("r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for r in reader:
@@ -77,4 +88,3 @@ class SocialNLP:
         y = base_labels + [label] * len(list(texts))
         self.pipeline.fit(X, y)
         joblib.dump(self.pipeline, self.model_path)
-

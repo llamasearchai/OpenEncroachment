@@ -5,10 +5,12 @@ import pathlib
 from statistics import mean, pstdev
 from typing import Any
 
-from ..utils.io import gen_id, now_iso
+from open_encroachment.utils.io import gen_id, now_iso
 
 
-def ingest(config: dict[str, Any], data_path: str = "data/ground/ground_sensors.csv") -> list[dict[str, Any]]:
+def ingest(
+    config: dict[str, Any], data_path: str = "data/ground/ground_sensors.csv"
+) -> list[dict[str, Any]]:
     events: list[dict[str, Any]] = []
     p = pathlib.Path(data_path)
     if not p.exists():
@@ -18,15 +20,17 @@ def ingest(config: dict[str, Any], data_path: str = "data/ground/ground_sensors.
         reader = csv.DictReader(f)
         for r in reader:
             try:
-                rows.append({
-                    "timestamp": r.get("timestamp") or now_iso(),
-                    "lat": float(r["lat"]),
-                    "lon": float(r["lon"]),
-                    "pm25": float(r.get("pm25", 0) or 0),
-                    "noise_db": float(r.get("noise_db", 0) or 0),
-                    "vibration": float(r.get("vibration", 0) or 0),
-                    "temp_c": float(r.get("temp_c", 0) or 0),
-                })
+                rows.append(
+                    {
+                        "timestamp": r.get("timestamp") or now_iso(),
+                        "lat": float(r["lat"]),
+                        "lon": float(r["lon"]),
+                        "pm25": float(r.get("pm25", 0) or 0),
+                        "noise_db": float(r.get("noise_db", 0) or 0),
+                        "vibration": float(r.get("vibration", 0) or 0),
+                        "temp_c": float(r.get("temp_c", 0) or 0),
+                    }
+                )
             except Exception:
                 continue
     if not rows:
@@ -55,4 +59,3 @@ def ingest(config: dict[str, Any], data_path: str = "data/ground/ground_sensors.
         }
         events.append(evt)
     return events
-

@@ -73,4 +73,3 @@ def load_or_create_hmac_key(key_path: str | os.PathLike) -> bytes:
 def hmac_sign(key: bytes, data: bytes) -> str:
     mac = hmac.new(key, data, hashlib.sha256).digest()
     return base64.urlsafe_b64encode(mac).decode("ascii")
-

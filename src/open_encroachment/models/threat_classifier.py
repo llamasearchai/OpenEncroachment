@@ -5,7 +5,7 @@ from typing import Any
 import joblib
 import numpy as np
 
-from ..nlp.nlp_engine import SocialNLP
+from open_encroachment.nlp.nlp_engine import SocialNLP
 
 
 class ThreatClassifier:
@@ -21,7 +21,9 @@ class ThreatClassifier:
         except Exception:
             return None
 
-    def _baseline_probability(self, features: dict[str, float], text_score: float, in_geofence: bool) -> float:
+    def _baseline_probability(
+        self, features: dict[str, float], text_score: float, in_geofence: bool
+    ) -> float:
         # Simple heuristic combining available signals into [0,1]
         score = 0.0
         weights = {
@@ -59,18 +61,19 @@ class ThreatClassifier:
                 else:
                     norm[k] = v
             prob = self._baseline_probability(norm, text_score, bool(e.get("in_geofence")))
-            results.append({
-                "id": e["id"],
-                "timestamp": e["timestamp"],
-                "lat": e.get("lat"),
-                "lon": e.get("lon"),
-                "geofence_id": e.get("geofence_id"),
-                "in_geofence": e.get("in_geofence", False),
-                "threat_probability": prob,
-                "text_threat": text_score,
-                "features": norm,
-                "sources": e.get("sources", []),
-                "raw_event_ids": e.get("raw_event_ids", []),
-            })
+            results.append(
+                {
+                    "id": e["id"],
+                    "timestamp": e["timestamp"],
+                    "lat": e.get("lat"),
+                    "lon": e.get("lon"),
+                    "geofence_id": e.get("geofence_id"),
+                    "in_geofence": e.get("in_geofence", False),
+                    "threat_probability": prob,
+                    "text_threat": text_score,
+                    "features": norm,
+                    "sources": e.get("sources", []),
+                    "raw_event_ids": e.get("raw_event_ids", []),
+                }
+            )
         return results
-

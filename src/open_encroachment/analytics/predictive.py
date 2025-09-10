@@ -32,10 +32,7 @@ def predict_geofence_risk(
         scores[gf].append(sev)
     results: list[dict[str, Any]] = []
     for gf, vals in scores.items():
-        if vals:
-            risk = sum(vals) / len(vals)
-        else:
-            risk = 0.0
+        risk = sum(vals) / len(vals) if vals else 0.0
         results.append({"geofence_id": gf, "risk": round(risk, 4), "count": len(vals)})
     # Write CSV
     p = pathlib.Path(out_csv)
@@ -46,4 +43,3 @@ def predict_geofence_risk(
         for row in results:
             w.writerow(row)
     return results
-

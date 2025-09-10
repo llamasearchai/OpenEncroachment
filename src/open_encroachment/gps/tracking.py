@@ -4,7 +4,7 @@ import csv
 import pathlib
 from typing import Any
 
-from ..utils.io import gen_id
+from open_encroachment.utils.io import gen_id
 
 
 def ingest_tracks(path: str = "data/gps/gps_events.csv") -> list[dict[str, Any]]:
@@ -16,16 +16,17 @@ def ingest_tracks(path: str = "data/gps/gps_events.csv") -> list[dict[str, Any]]
         reader = csv.DictReader(f)
         for r in reader:
             try:
-                events.append({
-                    "id": gen_id("gps"),
-                    "source": "gps",
-                    "timestamp": r.get("timestamp"),
-                    "lat": float(r.get("lat")),
-                    "lon": float(r.get("lon")),
-                    "features": {},
-                    "artifacts": {"raw": r},
-                })
+                events.append(
+                    {
+                        "id": gen_id("gps"),
+                        "source": "gps",
+                        "timestamp": r.get("timestamp"),
+                        "lat": float(r.get("lat")),
+                        "lon": float(r.get("lon")),
+                        "features": {},
+                        "artifacts": {"raw": r},
+                    }
+                )
             except Exception:
                 continue
     return events
-

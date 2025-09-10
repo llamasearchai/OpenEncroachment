@@ -32,7 +32,9 @@ def severity_score(
     # Operational risk
     corroboration = 0.0
     # Use presence of multiple modalities as proxy
-    if any(k.startswith("img_") for k in features) and any(k.startswith("aerial_") for k in features):
+    if any(k.startswith("img_") for k in features) and any(
+        k.startswith("aerial_") for k in features
+    ):
         corroboration += 0.2
     if any(k.startswith("ground_sensor_") for k in features):
         corroboration += 0.2
@@ -46,4 +48,3 @@ def severity_score(
         "operational": float(np.clip(operational, 0.0, 1.0)),
         "overall": overall,
     }
-

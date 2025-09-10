@@ -9,7 +9,11 @@ from .tools import call_tool, tool_schemas
 DEFAULT_MODEL = os.environ.get("OPENAI_AGENT_MODEL", "gpt-4o-mini")
 
 
-def run_agent(prompt: str, model: str = DEFAULT_MODEL, system: str = "You are the OpenEncroachment operator assistant.") -> dict[str, Any]:
+def run_agent(
+    prompt: str,
+    model: str = DEFAULT_MODEL,
+    system: str = "You are the OpenEncroachment operator assistant.",
+) -> dict[str, Any]:
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is not set in environment.")
@@ -54,4 +58,3 @@ def run_agent(prompt: str, model: str = DEFAULT_MODEL, system: str = "You are th
             "model": model,
         }
     return {"ok": False, "error": "Tool loop exceeded limit"}
-

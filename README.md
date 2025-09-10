@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="OpenEncroachment.png" alt="OpenEncroachment Logo" width="320" />
+</p>
+
 # OpenEncroachment
 
-OpenEncroachment is a Python-based threat detection system that fuses multi-sensor data (satellite imagery, ground sensors, aerial surveillance, social media/NLP) and coordinates responses to protect natural assets and critical infrastructure.
+OpenEncroachment is an OpenAI Agents SDK integrated threat detection system that fuses multi-sensor data (satellite imagery, ground sensors, aerial surveillance, social media/NLP) and coordinates responses to protect natural assets and critical infrastructure.
 
 Capabilities:
 - Data ingestion from satellite, ground sensors, aerial data, and social streams
@@ -44,6 +48,19 @@ Repo layout:
 - outbox/: Locally written notifications and secure packages
 - tests/: Unit tests
 
+Configuration:
+- settings.yaml: main configuration, loaded by default. Reasonable defaults are embedded, so it is optional.
+- dispatcher.yaml: optional. If present in `config/dispatcher.yaml` (or provided via `dispatch_config_path`), it augments `dispatch` with webhook/TLS options.
+  - Example:
+    - mode: webhook
+    - webhook:
+      - url: https://example.org/webhook
+      - timeout: 10.0
+      - ca_bundle: /path/to/ca.pem
+      - client_cert: /path/to/cert.pem
+      - client_key: /path/to/key.pem
+      - headers: {X-Api-Key: secret}
+
 Security and privacy:
 - No external services are contacted unless configured. By default, notifications are sealed and written to outbox/.
 - Keys for signing are generated on first run and stored under .secrets/ (gitignored).
@@ -61,6 +78,7 @@ We use uv for environment management and Hatch for build/packaging.
 - Lint: ~/.local/bin/uvx ruff check .
 - Type-check: ~/.local/bin/uvx mypy --strict src/open_encroachment
 - Format: ~/.local/bin/uv run hatch run dev:format
+- Pre-commit: ~/.local/bin/uvx pre-commit run -a (install with `~/.local/bin/uvx pre-commit install`)
 
 Agents:
 - export OPENAI_API_KEY before using the agent
@@ -75,4 +93,3 @@ llm CLI (optional):
 - ~/.local/bin/uvx llm install llm-openai
 - ~/.local/bin/uvx llm keys set openai
 - Example: ~/.local/bin/uvx llm -m openai/gpt-4o-mini "Summarize:" < artifacts/predictions/risk_map.csv
-
