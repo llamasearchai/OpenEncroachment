@@ -1,0 +1,28 @@
+# OpenEncroachment configuration
+
+geofences:
+  - id: sample_conservation_area
+    name: Sample Conservation Area
+    # Polygon defined as list of [lat, lon] pairs (closed automatically)
+    polygon:
+      - [37.3317, -122.0301]
+      - [37.3317, -122.0000]
+      - [37.3510, -122.0000]
+      - [37.3510, -122.0301]
+
+dispatch:
+  mode: local   # local | webhook
+  outbox_dir: outbox
+  # webhook_url: "https://example.org/notify"   # optional
+  headers: {}
+
+thresholds:
+  severity_notify_min: 0.6
+  severity_escalate_min: 0.8
+
+artifacts:
+  models_dir: artifacts/models
+  predictions_dir: artifacts/predictions
+  db_path: artifacts/case_manager.db
+  evidence_ledger: artifacts/evidence_ledger.jsonl
+

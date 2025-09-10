@@ -1,0 +1,9 @@
+mode: webhook
+webhook:
+  url: "https://example.org/webhook"
+  ca_bundle: null
+  client_cert: null
+  client_key: null
+  timeout: 10.0
+  retries: 5
+

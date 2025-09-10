@@ -1,0 +1,16 @@
+metadata:
+  title: OpenEncroachment Case Database
+  description: Read-only view of cases, evidence, and predictions.
+databases:
+  case_manager:
+    url: artifacts/case_manager.db
+    tables: {}
+plugins: {}
+permissions:
+  allow:
+    - id: "*"
+      action: view-instance
+settings:
+  default_page_size: 100
+  num_sql_threads: 4
+
