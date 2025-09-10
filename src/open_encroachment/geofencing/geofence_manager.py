@@ -40,6 +40,7 @@ class GeofenceManager:
     def list_geofences(self) -> list[dict[str, Any]]:
         """Get all geofence definitions."""
         import copy
+
         return copy.deepcopy(self.geofences)
 
     def distance_to_geofence(self, lat: float, lon: float, geofence_id: str) -> float | None:
